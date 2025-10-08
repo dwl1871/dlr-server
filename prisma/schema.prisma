@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  clients   Client[]
+  jobs      Job[]
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String?
+  email     String?
+  address   String?
+  notes     String?
+  ownerId   Int
+  owner     User     @relation(fields: [ownerId], references: [id])
+  jobs      Job[]
+  createdAt DateTime @default(now())
+}
+
+model Job {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  status      String   @default("PLANNING")
+  budget      Float?
+  ownerId     Int
+  owner       User     @relation(fields: [ownerId], references: [id])
+  clientId    Int?
+  client      Client?  @relation(fields: [clientId], references: [id])
+  photos      Photo[]
+  createdAt   DateTime @default(now())
+}
+
+model Photo {
+  id       Int      @id @default(autoincrement())
+  url      String
+  caption  String?
+  tags     String   @default("[]")   // JSON text
+  stage    String   @default("BEFORE")
+  takenAt  DateTime @default(now())
+  jobId    Int?
+  job      Job?     @relation(fields: [jobId], references: [id])
+}
