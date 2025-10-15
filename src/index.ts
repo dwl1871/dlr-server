@@ -13,4 +13,6 @@ app.use(morgan('dev'));
 app.use('/api', router);
 
 const port = Number(process.env.PORT) || 4000;
-app.listen(port, () => console.log(`DLR server running on http://localhost:${port}`));
+app.listen(port, '0.0.0.0', () => {
+  console.log(`DLR server running on port ${port}`);
+});
