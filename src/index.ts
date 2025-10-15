@@ -12,6 +12,11 @@ app.use(cors({ origin: process.env.ORIGIN?.split(',') || true, credentials: true
 app.use(morgan('dev'));
 app.use('/api', router);
 
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true, time: new Date().toISOString() });
+});
+
+
 const port = Number(process.env.PORT) || 4000;
 app.listen(port, '0.0.0.0', () => {
   console.log(`DLR server running on port ${port}`);
