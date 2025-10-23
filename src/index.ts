@@ -1,3 +1,4 @@
+
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
@@ -8,6 +9,22 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const app = express();
+// ---- CORS (allow web + preflight) ----
+const raw = process.env.ORIGIN ?? '*';
+const origins = raw.split(',').map(s => s.trim());
+const allowAll = origins.length === 1 && origins[0] === '*';
+
+app.use(
+  cors({
+    origin: allowAll ? '*' : origins,                 // allow "*" or a list
+    credentials: !allowAll,                           // only send credentials if not "*"
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+
+// Handle OPTIONS preflight for all routes
+app.options('*', cors());
 app.use(helmet());
 app.use(express.json()); //
 app.use(cors({ origin: process.env.ORIGIN?.split(',') || true, credentials: true }));
